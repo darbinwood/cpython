@@ -1,0 +1,114 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
+import random
+from fake_useragent import UserAgent
+
+# -----------------------------------------
+def print_intro():
+    print(r"""
+ ____    _    _     _ _         
+|  _ \  / \  | |   (_) |_ _ __  
+| | | |/ _ \ | |   | | __| '_ \ 
+| |_| / ___ \| |___| | |_| | | |
+|____/_/   \_\_____|_|\__|_| |_|
+
+  Welcome to DarbinBot - 
+  Only for Real Legends ??????
+
+    """)
+    print("Starting the ultimate Instagram domination... ??")
+    print("-" * 50)
+    print("\n")
+
+# -----------------------------------------
+class DarbinBot:
+    def __init__(self, username, password):
+        options = webdriver.ChromeOptions()
+        options.add_argument(f"user-agent={UserAgent().random}")
+        options.add_argument("--start-maximized")
+        self.driver = webdriver.Chrome(options=options)
+        self.username = username
+        self.password = password
+
+    def login(self):
+        self.driver.get("https://www.instagram.com/accounts/login/")
+        time.sleep(random.uniform(4, 7))
+
+        username_input = self.driver.find_element(By.NAME, "username")
+        password_input = self.driver.find_element(By.NAME, "password")
+
+        username_input.send_keys(self.username)
+        password_input.send_keys(self.password)
+        password_input.send_keys(Keys.ENTER)
+
+        time.sleep(random.uniform(5, 8))
+
+    def explore_and_act(self, max_likes=40, max_comments=10, max_follows=5):
+        self.driver.get("https://www.instagram.com/explore/")
+        time.sleep(random.uniform(4, 6))
+
+        likes = 0
+        comments = 0
+        follows = 0
+
+        while likes < max_likes:
+            posts = self.driver.find_elements(By.XPATH, '//div[@class="_aagw"]')
+            if posts:
+                post = random.choice(posts)
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", post)
+                time.sleep(random.uniform(2, 4))
+                post.click()
+                time.sleep(random.uniform(2, 4))
+
+                try:
+                    # Like action
+                    if random.random() < 0.9:  # 90% ÔÇäÓ áÇí˜
+                        like_btn = self.driver.find_element(By.XPATH, '//span[contains(@aria-label, "Like")]')
+                        like_btn.click()
+                        likes += 1
+                        print(f"?? áÇí˜ ÊÑ˜æäÏíã | ãÌãæÚ áÇí˜åÇ: {likes}")
+
+                    # Comment action
+                    if comments < max_comments and random.random() < 0.3:
+                        comment_area = self.driver.find_element(By.XPATH, '//textarea[@aria-label="Add a comment…"]')
+                        comment_area.click()
+                        comment_text = random.choice(["Awesome ??", "Cool ??", "Amazing ??", "Beautiful ??"])
+                        comment_area.send_keys(comment_text)
+                        comment_area.send_keys(Keys.ENTER)
+                        comments += 1
+                        print(f"??? ˜ÇãäÊ ÒÏíã | ãÌãæÚ ˜ÇãäÊåÇ: {comments}")
+
+                    # Follow action
+                    if follows < max_follows and random.random() < 0.2:
+                        follow_button = self.driver.find_element(By.XPATH, '//button[text()="Follow"]')
+                        follow_button.click()
+                        follows += 1
+                        print(f"? ÝÇáæ ˜ÑÏíã | ãÌãæÚ ÝÇáæåÇ: {follows}")
+
+                except Exception as e:
+                    print(f"ãÔ˜á ÏÑ ÚãáíÇÊ: {e}")
+
+                self.driver.back()
+                time.sleep(random.uniform(4, 7))
+
+                # Rest after some actions
+                if likes % 10 == 0:
+                    print("? ÇÓÊÑÇÍÊ ˜æÊÇå...")
+                    time.sleep(random.uniform(10, 20))
+
+            # Scroll to load new posts
+            self.driver.execute_script("window.scrollBy(0, window.innerHeight);")
+            time.sleep(random.uniform(2, 5))
+
+    def close(self):
+        self.driver.quit()
+
+# -----------------------------------------
+if __name__ == "__main__":
+    print_intro()
+    bot = DarbinBot("your_username", "your_password")
+    bot.login()
+    bot.explore_and_act(max_likes=40, max_comments=10, max_follows=5)
+    bot.close()
